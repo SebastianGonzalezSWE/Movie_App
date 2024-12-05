@@ -22,7 +22,7 @@ import com.example.moviebuffs.ui.MovieBuffsApp
 import com.example.moviebuffs.ui.theme.MovieBuffsTheme
 
 class MainActivity : ComponentActivity() {
-   // @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+    //@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -32,7 +32,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MovieBuffsApp()
+                    //val windowSize = calculateWindowSizeClass(this)
+                    MovieBuffsApp(
+                        windowSize = windowSize.widthSizeClass
+                    )
                 }
             }
         }

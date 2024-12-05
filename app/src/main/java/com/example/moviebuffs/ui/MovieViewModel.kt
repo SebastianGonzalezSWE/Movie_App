@@ -9,6 +9,9 @@ import com.example.moviebuffs.ui.network.Movie
 import com.example.moviebuffs.ui.network.MovieApi
 import kotlinx.coroutines.launch
 import java.io.IOException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
 sealed interface MovieUiState{
     data class Success(val movies: List<Movie>) : MovieUiState
@@ -16,12 +19,47 @@ sealed interface MovieUiState{
     object Loading : MovieUiState
 }
 
+data class UiState(
+    val movieList: List<Movie> = emptyList(),
+    val currentMovie: Movie?,
+    val isShowingListPage: Boolean = true,
+)
+
 class MovieViewModel : ViewModel(){
     var movieUiState: MovieUiState by mutableStateOf(MovieUiState.Loading)
         private set
+    private val _uiState = MutableStateFlow(
+        UiState(
+            currentMovie = null,
+            isShowingListPage = true
+        )
+    )
+    val uiState: StateFlow<UiState> = _uiState
+
     init {
         getMovieBuffs()
+
     }
+
+    fun updateCurrentMovie(selectedMovie: Movie) {
+        _uiState.update {
+            it.copy(currentMovie = selectedMovie)
+        }
+    }
+
+    fun navigateToListPage() {
+        _uiState.update {
+            it.copy(isShowingListPage = true)
+        }
+    }
+
+
+    fun navigateToDetailPage() {
+        _uiState.update {
+            it.copy(isShowingListPage = false)
+        }
+    }
+
 
     fun getMovieBuffs(){
         viewModelScope.launch {
@@ -32,4 +70,5 @@ class MovieViewModel : ViewModel(){
           }
         }
     }
+
 }
