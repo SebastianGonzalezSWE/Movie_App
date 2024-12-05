@@ -61,7 +61,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-    //implementation("androidx.compose.material3:material3-window-size-class")
+    //Window Size Class
+    implementation("androidx.compose.material3:material3-window-size-class")
+
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     // Retrofit with Kotlin serialization Converter

@@ -1,11 +1,17 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.example.moviebuffs.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -21,7 +27,7 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.dimensionResource
-
+import androidx.compose.ui.unit.dp
 import com.example.moviebuffs.R
 import com.example.moviebuffs.ui.network.Movie
 import com.example.moviebuffs.ui.utils.MovieContentType
@@ -33,6 +39,11 @@ fun MovieBuffsApp(
     modifier: Modifier = Modifier
 ){
     val viewModel: MovieViewModel = viewModel()
+    HomeScreen(
+        onClick = { },
+        movieUiState = viewModel.movieUiState,
+        retryAction = viewModel::getMovieBuffs
+    )
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -62,40 +73,43 @@ fun MovieBuffsApp(
         }
     ) { innerPadding ->
        if(contentType == MovieContentType.LIST_AND_DETAIL) {
-           MovieListAndDetails(
-               movies = uiState.movieList,
-               onClick = {
-                   viewModel.updateCurrentMovie(it)
-               },
-               selectedMovie = uiState.currentMovie,
-               contentPadding = innerPadding,
-               modifier = Modifier.fillMaxWidth()
-           )
+               MovieListAndDetails(
+                   //*
+                   movies = uiState.moviesList,
+                   onClick = {
+                       viewModel.updateCurrentMovie(it)
+                   },
+                   //*
+                   selectedMovie = uiState.currentMovie,
+                   contentPadding = innerPadding,
+                   modifier = Modifier.fillMaxWidth()
+               )
+
        }else{
            if(uiState.isShowingListPage){
                MovieList(
-                   movies = uiState.movieList,
+                   movies = uiState.moviesList,
                    onClick = {
-                       viewModel.updateCurrentMovie(it),
+                       viewModel.updateCurrentMovie(it)
                        viewModel.navigateToListPage()
                    },
                    contentPadding = innerPadding,
                    modifier = Modifier
                        .fillMaxWidth()
                        .padding(
-                           top = dimensionResource(R.dimen.padding_medium),
-                           start = dimensionResource(R.dimen.padding_medium),
-                           end = dimensionResource(R.dimen.padding_medium),
+                           top = (16.dp),
+                           start = (16.dp),
+                           end = (16.dp),
                        )
                )
            } else{
-               MovieDetail(
-                   selectedMovie = uiState.currentMovie,
-                   contentPadding = innerPadding,
-                   onBackPressed = {
-                       viewModel.navigateToListPage()
-                   }
-               )
+                   MovieDetail(
+                       selectedMovie = uiState.currentMovie,
+                       contentPadding = innerPadding,
+                       onBackPressed = {
+                           viewModel.navigateToListPage()
+                       }
+                   )
            }
        }
     }
@@ -111,16 +125,29 @@ fun MovieTopAppBar(
         scrollBehavior = scrollBehavior,
         title = {
             Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineSmall,
+                text =
+                if (!isShowingListPage) {
+                    "Movie Buff"
+                } else {
+                    "Movie Buff Details"
+                }
             )
         },
-        modifier = modifier
+        navigationIcon = if (!isShowingListPage) {
+            {
+                IconButton(onClick = onBackButtonClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back_Button"
+                    )
+                }
+            }
+        } else {
+            { Box {} }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        ),
+        modifier = modifier,
     )
 }
-/*
-HomeScreen(
-movieUiState = movieViewModel.movieUiState,
-onClick = movieViewModel.updateCurrentMovie(Movie),
-retryAction = movieViewModel::getMovieBuffs
-)*/

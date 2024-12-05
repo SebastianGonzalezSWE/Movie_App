@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-//import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-//import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-//import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,7 +22,8 @@ import com.example.moviebuffs.ui.MovieBuffsApp
 import com.example.moviebuffs.ui.theme.MovieBuffsTheme
 
 class MainActivity : ComponentActivity() {
-    //@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -32,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    //val windowSize = calculateWindowSizeClass(this)
+                    val windowSize = calculateWindowSizeClass(this)
                     MovieBuffsApp(
                         windowSize = windowSize.widthSizeClass
                     )
@@ -42,3 +43,39 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+@Preview(showBackground = true)
+@Composable
+fun MovieAppCompactPreview() {
+    MovieBuffsTheme {
+        Surface {
+            MovieBuffsApp(
+                windowSize = WindowWidthSizeClass.Compact
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 700)
+@Composable
+fun MovieAppMediumPreview() {
+    MovieBuffsTheme {
+        Surface {
+            MovieBuffsApp(
+                windowSize = WindowWidthSizeClass.Medium
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 1000)
+@Composable
+fun MovieAppExpandedPreview() {
+    MovieBuffsTheme {
+        Surface {
+            MovieBuffsApp(
+                windowSize = WindowWidthSizeClass.Expanded
+            )
+        }
+    }
+}

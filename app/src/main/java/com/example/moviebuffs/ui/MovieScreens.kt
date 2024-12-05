@@ -71,7 +71,7 @@ fun HomeScreen(
 
 @Composable
 fun MovieListAndDetails(
-    movies: List<Movie>,
+   movies: List<Movie>,
     onClick: (Movie) -> Unit,
     selectedMovie: Movie,
     contentPadding: PaddingValues,
@@ -127,6 +127,7 @@ fun MovieCard(movie: Movie,
               modifier: Modifier = Modifier
 ) {
     Card(
+        onClick = {onItemClick(movie)},
         elevation = CardDefaults.cardElevation(4.dp),
         modifier = Modifier
             .padding(top = 8.dp)
