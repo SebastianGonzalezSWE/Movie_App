@@ -2,6 +2,7 @@
 package com.example.moviebuffs.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -39,29 +40,8 @@ fun MovieBuffsApp(
     modifier: Modifier = Modifier
 ){
     val viewModel: MovieViewModel = viewModel()
-    HomeScreen(
-        onClick = { },
-        movieUiState = viewModel.movieUiState,
-        retryAction = viewModel::getMovieBuffs
-    )
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-    val contentType: MovieContentType
-    when (windowSize){
-        WindowWidthSizeClass.Compact ->{
-            contentType = MovieContentType.LIST_ONLY
-        }
-        WindowWidthSizeClass.Medium ->{
-            contentType = MovieContentType.LIST_ONLY
-        }
-        WindowWidthSizeClass.Expanded ->{
-            contentType = MovieContentType.LIST_AND_DETAIL
-        }
-        else -> {
-            contentType = MovieContentType.LIST_ONLY
-        }
-    }
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -72,46 +52,7 @@ fun MovieBuffsApp(
              )
         }
     ) { innerPadding ->
-       if(contentType == MovieContentType.LIST_AND_DETAIL) {
-               MovieListAndDetails(
-                   //*
-                   movies = uiState.moviesList,
-                   onClick = {
-                       viewModel.updateCurrentMovie(it)
-                   },
-                   //*
-                   selectedMovie = uiState.currentMovie,
-                   contentPadding = innerPadding,
-                   modifier = Modifier.fillMaxWidth()
-               )
 
-       }else{
-           if(uiState.isShowingListPage){
-               MovieList(
-                   movies = uiState.moviesList,
-                   onClick = {
-                       viewModel.updateCurrentMovie(it)
-                       viewModel.navigateToListPage()
-                   },
-                   contentPadding = innerPadding,
-                   modifier = Modifier
-                       .fillMaxWidth()
-                       .padding(
-                           top = (16.dp),
-                           start = (16.dp),
-                           end = (16.dp),
-                       )
-               )
-           } else{
-                   MovieDetail(
-                       selectedMovie = uiState.currentMovie,
-                       contentPadding = innerPadding,
-                       onBackPressed = {
-                           viewModel.navigateToListPage()
-                       }
-                   )
-           }
-       }
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,3 +92,12 @@ fun MovieTopAppBar(
         modifier = modifier,
     )
 }
+
+/*
+   HomeScreen(
+            innerPadding = (0.dp),
+            onClick = { },
+            movieUiState = viewModel.movieUiState,
+            retryAction = viewModel::getMovieBuffs
+        )
+ */
