@@ -27,11 +27,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.example.moviebuffs.R
 import com.example.moviebuffs.ui.network.Movie
 import com.example.moviebuffs.ui.utils.MovieContentType
+import com.example.moviebuffs.ui.HomeScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +53,22 @@ fun MovieBuffsApp(
             onBackButtonClick = { viewModel.navigateToListPage() },
              )
         }
-    ) { innerPadding ->
+    ) {
+        innerPadding ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            val movieViewModel: MovieViewModel = viewModel()
+            HomeScreen(
+                movies = movie,
+                movieUiState = movieViewModel.movieUiState,
+                onClick = { },
+                retryAction = { },
+                innerPaddingValues = innerPadding
+                )
+        }
 
     }
 }

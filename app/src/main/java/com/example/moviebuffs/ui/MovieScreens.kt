@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
@@ -37,7 +38,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.moviebuffs.R
 import com.example.moviebuffs.ui.network.Movie
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.DateRange
@@ -45,8 +45,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -58,6 +56,7 @@ import com.example.moviebuffs.ui.utils.MovieContentType
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun HomeScreen(
+    movies: List<Movie>,
     movieUiState: MovieUiState,
     innerPaddingValues: PaddingValues,
     onClick: (Movie) -> Unit,
@@ -67,8 +66,9 @@ fun HomeScreen(
 ){
     when (movieUiState){
         is MovieUiState.Success ->
-
-
+        CheckStatus(movies = movieUiState.movies,
+            windowSize = windowWidthClass
+        )
         is MovieUiState.Loading -> LoadingScreen(
             modifier = modifier.fillMaxWidth()
         )
@@ -82,7 +82,8 @@ fun HomeScreen(
 
 @Composable
 fun CheckStatus(
-   movie: List<Movie>,
+    //windowSize: WindowWidthSizeClass,
+   movies: List<Movie>,
    windowSize: WindowWidthSizeClass,
     modifier: Modifier = Modifier
 ) {
@@ -111,11 +112,11 @@ fun CheckStatus(
     innerPadding ->
     if (contentType == MovieContentType.LIST_AND_DETAIL) {
         MovieListAndDetails(
-            movies = uiState.currentMovie,
+            movies = movies,
             onClick = {
                 viewModel.updateCurrentMovie(it)
             },
-            selectedMovie = uiState.currentMovie,
+            selectedMovie = uiState.currentMovie?:movies[0],
             contentPadding = innerPadding,
             modifier = Modifier.fillMaxWidth()
         )
@@ -123,7 +124,7 @@ fun CheckStatus(
     } else {
         if (uiState.isShowingListPage) {
             MovieList(
-                movie = movie,
+                movies = movies,
                 onClick = {
                     viewModel.updateCurrentMovie(it)
                     viewModel.navigateToListPage()
@@ -138,7 +139,7 @@ fun CheckStatus(
                     )
             )
         } else {
-            MovieDetail(
+            MovieDetails(
                 selectedMovie = uiState.currentMovie,
                 contentPadding = innerPadding,
                 onBackPressed = {
@@ -153,15 +154,15 @@ fun CheckStatus(
 
 @Composable
 fun MovieListAndDetails(
+    selectedMovie: Movie,
     movies: List<Movie>,
     onClick: (Movie) -> Unit,
-    selectedMovie: Movie,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
         MovieList(
-            movie = movies,
+            movies = movies,
             onClick = onClick,
             contentPadding = contentPadding,
             modifier = Modifier
@@ -171,7 +172,7 @@ fun MovieListAndDetails(
                     end = (16.dp)
                 )
         )
-        MovieDetail(
+        MovieDetails(
             selectedMovie = selectedMovie,
             onBackPressed = {  },
             contentPadding = contentPadding,
@@ -181,16 +182,17 @@ fun MovieListAndDetails(
 }
 
 @Composable
-fun MovieList(movie: List<Movie>,
-              onClick: (Movie)-> Unit,
-              modifier: Modifier = Modifier,
-              contentPadding: PaddingValues = PaddingValues(0.dp)
+private fun MovieList(
+    movies: List<Movie>,
+    onClick: (Movie)-> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp)
     ) {
     LazyColumn(
         contentPadding = contentPadding,
         modifier = modifier,
     ) {
-        items(movie){ movie->
+        items(movies){ movie->
             MovieCard(movie = movie,
                 onItemClick = onClick,
                 modifier = modifier
@@ -204,7 +206,8 @@ fun MovieList(movie: List<Movie>,
 
 
 @Composable
-fun MovieCard(movie: Movie,
+fun MovieCard(
+              movie: Movie,
               onItemClick: (Movie) ->Unit,
               modifier: Modifier = Modifier
 ) {
@@ -277,7 +280,7 @@ fun MovieCard(movie: Movie,
 
 
 @Composable
-fun MovieDetail(
+fun MovieDetails(
     selectedMovie: Movie,
     onBackPressed: () -> Unit,
     contentPadding: PaddingValues,
