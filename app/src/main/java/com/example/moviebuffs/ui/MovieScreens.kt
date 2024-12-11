@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.example.moviebuffs.ui
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +47,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,18 +58,19 @@ import com.example.moviebuffs.ui.utils.MovieContentType
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun HomeScreen(
-    movies: List<Movie>,
+    windowSize: WindowWidthSizeClass,
     movieUiState: MovieUiState,
-    innerPaddingValues: PaddingValues,
+    innerPadding: PaddingValues,
     onClick: (Movie) -> Unit,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier
-    //Add Inner Padding
 ){
     when (movieUiState){
         is MovieUiState.Success ->
-        CheckStatus(movies = movieUiState.movies,
-            windowSize = windowWidthClass
+        CheckStatus(
+            innerPadding = innerPadding,
+            movies = movieUiState.movies,
+            windowSize = windowSize
         )
         is MovieUiState.Loading -> LoadingScreen(
             modifier = modifier.fillMaxWidth()
@@ -82,9 +85,9 @@ fun HomeScreen(
 
 @Composable
 fun CheckStatus(
-    //windowSize: WindowWidthSizeClass,
-   movies: List<Movie>,
-   windowSize: WindowWidthSizeClass,
+    movies: List<Movie>,
+    innerPadding: PaddingValues,
+    windowSize: WindowWidthSizeClass,
     modifier: Modifier = Modifier
 ) {
     val viewModel: MovieViewModel = viewModel()
@@ -108,16 +111,17 @@ fun CheckStatus(
             contentType = MovieContentType.LIST_ONLY
         }
     }
-    Scaffold {
-    innerPadding ->
+    Log.e("APP", "CheckStatus: otuside if $contentType")
+
     if (contentType == MovieContentType.LIST_AND_DETAIL) {
+        Log.e("APP", "CheckStatus: $contentType")
         MovieListAndDetails(
             movies = movies,
             onClick = {
                 viewModel.updateCurrentMovie(it)
             },
             selectedMovie = uiState.currentMovie?:movies[0],
-            contentPadding = innerPadding,
+            //contentPadding = innerPadding,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -127,9 +131,9 @@ fun CheckStatus(
                 movies = movies,
                 onClick = {
                     viewModel.updateCurrentMovie(it)
-                    viewModel.navigateToListPage()
+                    viewModel.navigateToDetailPage()
                 },
-                contentPadding = innerPadding,
+                //contentPadding = innerPadding,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
@@ -140,7 +144,7 @@ fun CheckStatus(
             )
         } else {
             MovieDetails(
-                selectedMovie = uiState.currentMovie,
+                selectedMovie = uiState.currentMovie ?: movies[0],
                 contentPadding = innerPadding,
                 onBackPressed = {
                     viewModel.navigateToListPage()
@@ -149,7 +153,7 @@ fun CheckStatus(
         }
     }
     }
-}
+
 
 
 @Composable
@@ -157,14 +161,16 @@ fun MovieListAndDetails(
     selectedMovie: Movie,
     movies: List<Movie>,
     onClick: (Movie) -> Unit,
-    contentPadding: PaddingValues,
+    //contentPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
+    Log.e("APP", "MovieListAndDetails $movies")
+
     Row(modifier = modifier) {
         MovieList(
             movies = movies,
             onClick = onClick,
-            contentPadding = contentPadding,
+            //contentPadding = contentPadding,
             modifier = Modifier
                 .weight(2f)
                 .padding(
@@ -175,19 +181,20 @@ fun MovieListAndDetails(
         MovieDetails(
             selectedMovie = selectedMovie,
             onBackPressed = {  },
-            contentPadding = contentPadding,
+           // contentPadding = contentPadding,
             modifier = Modifier.weight(3f)
         )
     }
 }
 
 @Composable
-private fun MovieList(
+ fun MovieList(
     movies: List<Movie>,
     onClick: (Movie)-> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
     ) {
+    Log.e("APP", "MovieList $movies")
     LazyColumn(
         contentPadding = contentPadding,
         modifier = modifier,
@@ -283,14 +290,15 @@ fun MovieCard(
 fun MovieDetails(
     selectedMovie: Movie,
     onBackPressed: () -> Unit,
-    contentPadding: PaddingValues,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    //contentPadding: PaddingValues,
     modifier: Modifier = Modifier
 ){
     BackHandler {
         onBackPressed()
     }
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .verticalScroll(state = rememberScrollState())
             .padding(contentPadding)
@@ -439,13 +447,25 @@ fun MovieCardPreview(){
       )
     }
 }
-/*
+
 @Preview
 @Composable
-fun MovieListPreview() {
+fun MovieDetailsPreview(){
     MovieBuffsTheme {
-        MovieList(
-            movies = Movie()
+        MovieDetails(
+            selectedMovie = Movie(
+                title = "Star Wars",
+                pOSTER = "",
+                description = "A time long ago..." ,
+                release_date = "11-12-2026",
+                content_rating = "PG-13",
+                review_score = "9.7",
+                bigIMG = "",
+                length = "8 Hours"
+            )  ,
+            onBackPressed = { },
+            contentPadding = PaddingValues()
+
         )
     }
-}*/
+}

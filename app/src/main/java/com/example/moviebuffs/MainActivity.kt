@@ -20,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.moviebuffs.ui.MovieBuffsApp
 import com.example.moviebuffs.ui.theme.MovieBuffsTheme
+import com.example.moviebuffs.ui.network.Movie
+
 
 class MainActivity : ComponentActivity() {
 
@@ -33,10 +35,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
                     val windowSize = calculateWindowSizeClass(this)
                     MovieBuffsApp(
-                        windowSize = windowSize.widthSizeClass
-                    )
+                        windowSize = windowSize.widthSizeClass)
                 }
             }
         }

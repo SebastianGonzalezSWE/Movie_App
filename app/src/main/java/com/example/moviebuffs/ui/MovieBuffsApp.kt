@@ -34,6 +34,7 @@ import com.example.moviebuffs.R
 import com.example.moviebuffs.ui.network.Movie
 import com.example.moviebuffs.ui.utils.MovieContentType
 import com.example.moviebuffs.ui.HomeScreen
+import androidx.compose.material3.Surface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,19 +55,21 @@ fun MovieBuffsApp(
              )
         }
     ) {
-        innerPadding ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
-        ) {
+        )
+
+        {
+            val uiState by viewModel.uiState.collectAsState()
             val movieViewModel: MovieViewModel = viewModel()
             HomeScreen(
-                movies = movie,
+                windowSize = windowSize,
                 movieUiState = movieViewModel.movieUiState,
                 onClick = { },
-                retryAction = { },
-                innerPaddingValues = innerPadding
+                retryAction = movieViewModel::getMovieBuffs,
+                innerPadding = it
                 )
         }
 
@@ -85,9 +88,9 @@ fun MovieTopAppBar(
             Text(
                 text =
                 if (!isShowingListPage) {
-                    "Movie Buff"
+                    "Movie Buffs"
                 } else {
-                    "Movie Buff Details"
+                    "Loading Movie Buffs"
                 }
             )
         },
@@ -109,12 +112,3 @@ fun MovieTopAppBar(
         modifier = modifier,
     )
 }
-
-/*
-   HomeScreen(
-            innerPadding = (0.dp),
-            onClick = { },
-            movieUiState = viewModel.movieUiState,
-            retryAction = viewModel::getMovieBuffs
-        )
- */
